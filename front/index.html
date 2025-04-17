@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Générateur de mot de passe</title>
+</head>
+<body>
+    <h2>Formulaire de génération de mot de passe</h2>
+    <form id="passwordForm">
+        Longueur : <input type="number" name="length" value="8"><br>
+        <input type="checkbox" name="digits" checked> Inclure chiffres<br>
+        <input type="checkbox" name="special" checked> Caractères spéciaux<br>
+        <input type="checkbox" name="capital" checked> Majuscules<br>
+        <button type="submit">Générer</button>
+    </form>
+
+    <p id="result"></p>
+
+    <script>
+        document.getElementById("passwordForm").onsubmit = async (e) => {
+            e.preventDefault();
+            const form = e.target;
+
+            const length = form.length.value;
+            const digits = form.digits.checked;
+            const special = form.special.checked;
+            const capital = form.capital.checked;
+
+
+            const params = new URLSearchParams({
+                length,
+                digits: digits.toString(),
+                special: special.toString(),
+                capital: capital.toString()
+            });
+
+            try {
+                const res = await fetch("http://localhost:8000/generate-password?" + params.toString());
+                const data = await res.json();
+                document.getElementById("result").innerText = "Mot de passe : " + data.password;
+            } catch (error) {
+                document.getElementById("result").innerText = "Erreur de génération.";
+                console.error("Erreur API :", error);
+            }
+        };
+    </script>
+</body>
+</html>
